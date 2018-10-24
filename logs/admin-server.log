@@ -4386,3 +4386,5 @@ Caused by: java.lang.IllegalArgumentException: Parameter Maps collection does no
 	at org.apache.ibatis.builder.MapperBuilderAssistant.getStatementParameterMap(MapperBuilderAssistant.java:318)
 	... 118 common frames omitted
 2018-10-24 17:26:12,883 [http-nio-80-exec-2] DEBUG -[MyShiroRealm.java:71]- 权限配置
+2018-10-24 17:32:23,075 [http-nio-80-exec-10] DEBUG -[MyShiroRealm.java:71]- 权限配置
+2018-10-24 18:21:40,908 [http-nio-80-exec-8] DEBUG -[MyShiroRealm.java:71]- 权限配置

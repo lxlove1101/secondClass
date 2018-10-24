@@ -13,7 +13,6 @@ public class Permission extends BaseEntity<Long> {
 	private Integer type;
 	private String permission;
 	private Integer sort;
-
 	private List<Permission> child;
 
 	public Long getParentId() {

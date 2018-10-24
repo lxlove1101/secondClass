@@ -29,10 +29,18 @@ public class UserUtil {
 		return list;
 	}
 
+	/**
+	 * 设置当前用户权限
+	 * @param list
+	 */
 	public static void setPermissionSession(List<Permission> list) {
 		getSession().setAttribute(UserConstants.USER_PERMISSIONS, list);
 	}
 
+	/**
+	 * shiro权限控制，获取当前用户session
+	 * @return
+	 */
 	public static Session getSession() {
 		Subject currentUser = SecurityUtils.getSubject();
 		Session session = currentUser.getSession();

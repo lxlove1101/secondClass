@@ -34,8 +34,6 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * 权限相关接口
- * 
- * @author 小威老师 xiaoweijiagou@163.com
  *
  */
 @Api(tags = "权限")
@@ -48,72 +46,15 @@ public class PermissionController {
 	@Autowired
 	private PermissionService permissionService;
 
-	@ApiOperation(value = "当前登录用户拥有的权限")
 	@GetMapping("/current")
+	@ApiOperation(value = "获取当前登录用户权限能见的菜单")
 	public List<Permission> permissionsCurrent() {
-		List<Permission> list = UserUtil.getCurrentPermissions();
-		if (list == null) {
-			User user = UserUtil.getCurrentUser();
-			list = permissionDao.listByUserId(user.getId());
-			UserUtil.setPermissionSession(list);
-		}
-		final List<Permission> permissions = list.stream().filter(l -> l.getType().equals(1))
-				.collect(Collectors.toList());
-
-		List<Permission> firstLevel = permissions.stream().filter(p -> p.getParentId().equals(0L)).collect(Collectors.toList());
-		firstLevel.parallelStream().forEach(p -> {
-			setChild(p, permissions);
-		});
-
-		return firstLevel;
-	}
-
-	/**
-	 * 设置子元素
-	 * 2018.06.09
-	 *
-	 * @param p
-	 * @param permissions
-	 */
-	private void setChild(Permission p, List<Permission> permissions) {
-		List<Permission> child = permissions.parallelStream().filter(a -> a.getParentId().equals(p.getId())).collect(Collectors.toList());
-		p.setChild(child);
-		if (!CollectionUtils.isEmpty(child)) {
-			child.parallelStream().forEach(c -> {
-				//递归设置子元素，多级菜单支持
-				setChild(c, permissions);
-			});
-		}
-	}
-
-//	private void setChild(List<Permission> permissions) {
-//		permissions.parallelStream().forEach(per -> {
-//			List<Permission> child = permissions.stream().filter(p -> p.getParentId().equals(per.getId()))
-//					.collect(Collectors.toList());
-//			per.setChild(child);
-//		});
-//	}
-
-	/**
-	 * 菜单列表
-	 * 
-	 * @param pId
-	 * @param permissionsAll
-	 * @param list
-	 */
-	private void setPermissionsList(Long pId, List<Permission> permissionsAll, List<Permission> list) {
-		for (Permission per : permissionsAll) {
-			if (per.getParentId().equals(pId)) {
-				list.add(per);
-				if (permissionsAll.stream().filter(p -> p.getParentId().equals(per.getId())).findAny() != null) {
-					setPermissionsList(per.getId(), permissionsAll, list);
-				}
-			}
-		}
+		List<Permission> permissions = permissionService.permissionsCurrent();
+		return permissions;
 	}
 
 	@GetMapping
-	@ApiOperation(value = "菜单列表")
+	@ApiOperation(value = "获取菜单列表")
 	@RequiresPermissions("sys:menu:query")
 	public List<Permission> permissionsList() {
 		List<Permission> permissionsAll = permissionDao.listAll();
@@ -220,5 +161,23 @@ public class PermissionController {
 	@RequiresPermissions(value = { "sys:menu:del" })
 	public void delete(@PathVariable Long id) {
 		permissionService.delete(id);
+	}
+
+	/**
+	 * 菜单列表
+	 *
+	 * @param pId
+	 * @param permissionsAll
+	 * @param list
+	 */
+	private void setPermissionsList(Long pId, List<Permission> permissionsAll, List<Permission> list) {
+		for (Permission per : permissionsAll) {
+			if (per.getParentId().equals(pId)) {
+				list.add(per);
+				if (permissionsAll.stream().filter(p -> p.getParentId().equals(per.getId())).findAny() != null) {
+					setPermissionsList(per.getId(), permissionsAll, list);
+				}
+			}
+		}
 	}
 }
