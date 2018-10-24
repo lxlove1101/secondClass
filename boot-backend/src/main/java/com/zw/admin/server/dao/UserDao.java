@@ -3,13 +3,7 @@ package com.zw.admin.server.dao;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import com.zw.admin.server.model.User;
 
@@ -23,6 +17,7 @@ public interface UserDao {
 	@Select("select * from sys_user t where t.id = #{id}")
 	User getById(Long id);
 
+	@ResultType(value = User.class)
 	@Select("select * from sys_user t where t.username = #{username}")
 	User getUser(String username);
 

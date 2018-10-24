@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- GRADE_CHECK_DETAIL -->
+<mapper namespace="com.zw.admin.server.dao.GradeDao">
+    <!-- 结果映射 -->
+    <resultMap id="gradeCheckDetailMap" type="GradeCheckDetail">
+        <id column="ID" property="id" jdbcType="INTEGER" />
+        <result column="USER_ID" property="userId" jdbcType="BIGINT" />
+        <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+        <result column="STATE" property="state" jdbcType="VARCHAR" />
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="MODIFY_TIME" property="modifyTime" jdbcType="TIMESTAMP" />
+        <result column="SMALL_TYPE_ID" property="smallTypeId" jdbcType="VARCHAR" />
+        <result column="TYPE1_NAME" property="type1Name" jdbcType="VARCHAR" />
+        <result column="TYPE2_NAME" property="type2Name" jdbcType="VARCHAR" />
+        <result column="TYPE3_NAME" property="type3Name" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!-- 这里还需要添加一个SpecificItems的查询-->
+    <resultMap id="specificItemsMap" type="specificItemsDto">
+        <result column="SMALL_TYPE_ID" property="smallTypeId" jdbcType="CHAR" />
+        <result column="DETAILS" property="details" jdbcType="CLOB" />
+        <result column="TYPE1_NAME" property="type1Name" jdbcType="VARCHAR" />
+        <result column="TYPE2_NAME" property="type2Name" jdbcType="VARCHAR" />
+        <result column="TYPE3_NAME" property="type3Name" jdbcType="VARCHAR" />
+    </resultMap>
+    <!--需要查询返回一个 List<SpecificItemsDto> -->
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        ID, USER_ID, USER_NAME, STATE, CREATE_TIME, MODIFY_TIME,
+        SMALL_TYPE_ID, TYPE1_NAME, TYPE2_NAME, TYPE3_NAME, NAME
+    </sql>
+    <sql id="specificItemsColumns">
+        t2.SMALL_TYPE_ID, DETAILS, t1.NAME AS TYPE1_NAME, t2.NAME AS TYPE2_NAME, t2.SMALL_NAME AS TYPE3_NAME
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="getAll" resultMap="gradeCheckDetailMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM GRADE_CHECK_DETAIL
+    </select>
+
+    <!-- 根据条件查询数据 -->
+    <select id="list" resultMap="gradeCheckDetailMap" parameterType="map">
+        SELECT
+        <include refid="allColumns" />
+        FROM GRADE_CHECK_DETAIL WHERE 1 = 1
+        <if test="userId != null">
+            AND USER_ID = #{userId}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND USER_NAME LIKE CONCAT('%',#{userName},'%')
+        </if>
+        <if test="state != null">
+            AND STATE = #{state}
+        </if>
+        <if test="createTime != null">
+            AND CREATE_TIME = #{createTime}
+        </if>
+        <if test="modifyTime != null">
+            AND MODIFY_TIME = #{modifyTime}
+        </if>
+        <if test="smallTypeId != null and smallTypeId != ''">
+            AND SMALL_TYPE_ID LIKE CONCAT('%',#{smallTypeId},'%')
+        </if>
+        <if test="type1Name != null and type1Name != ''">
+            AND TYPE1_NAME LIKE CONCAT('%',#{type1Name},'%')
+        </if>
+        <if test="type2Name != null and type2Name != ''">
+            AND TYPE2_NAME LIKE CONCAT('%',#{type2Name},'%')
+        </if>
+        <if test="type3Name != null and type3Name != ''">
+            AND TYPE3_NAME LIKE CONCAT('%',#{type3Name},'%')
+        </if>
+        <if test="name != null and name != ''">
+            AND NAME LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <!-- 根据主键查询数据 -->
+    <select id="loads" resultMap="gradeCheckDetailMap" parameterType="list">
+        SELECT
+        <include refid="allColumns" />
+        FROM GRADE_CHECK_DETAIL WHERE ID IN
+        <foreach collection="list" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 查询所有表单填写项 -->
+    <select id="getAllGradeDetail" resultMap="specificItemsMap">
+        SELECT
+        <include refid="specificItemsColumns" />
+        FROM DIM_TYPE2_SUTUO AS t2, DIM_TYPE1_SUTUO AS t1, SPECIFIC_ITEMS AS s
+        WHERE t1.F_ID = t2.F_ID AND t2.SMALL_TYPE_ID = s.SMALL_TYPE_ID
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="create" parameterType="map">
+        INSERT INTO GRADE_CHECK_DETAIL (<include refid="allColumns" />)
+        VALUES (
+            #{id},
+            #{userId},
+            #{userName},
+            #{state},
+            #{createTime},
+            #{modifyTime},
+            #{smallTypeId},
+            #{type1Name},
+            #{type2Name},
+            #{type3Name},
+            #{name}
+        )
+    </insert>
+
+    <!-- 批量插入数据 -->
+    <insert id="creates" parameterType="list">
+        INSERT INTO GRADE_CHECK_DETAIL (<include refid="allColumns" />)
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+                #{item.id},
+                #{item.userId},
+                #{item.userName},
+                #{item.state},
+                #{item.createTime},
+                #{item.modifyTime},
+                #{item.smallTypeId},
+                #{item.type1Name},
+                #{item.type2Name},
+                #{item.type3Name},
+                #{item.name}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 修改数据 -->
+    <update id="update" parameterType="map">
+        UPDATE GRADE_CHECK_DETAIL
+        <set>
+            <if test="userId != null">USER_ID = #{userId},</if>
+            <if test="userName != null">USER_NAME = #{userName},</if>
+            <if test="state != null">STATE = #{state},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="modifyTime != null">MODIFY_TIME = #{modifyTime},</if>
+            <if test="smallTypeId != null">SMALL_TYPE_ID = #{smallTypeId},</if>
+            <if test="type1Name != null">TYPE1_NAME = #{type1Name},</if>
+            <if test="type2Name != null">TYPE2_NAME = #{type2Name},</if>
+            <if test="type3Name != null">TYPE3_NAME = #{type3Name},</if>
+            <if test="name != null">NAME = #{name}</if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 批量修改数据 -->
+    <!--<update id="updateGradeCheckDetails" parameterType="list">-->
+        <!--<foreach collection="list" index="index" item="item" separator=";">-->
+            <!--UPDATE GRADE_CHECK_DETAIL-->
+            <!--<set>-->
+                <!--<if test="userId != null">USER_ID = #{item.userId},</if>-->
+                <!--<if test="userName != null">USER_NAME = #{item.userName},</if>-->
+                <!--<if test="state != null">STATE = #{item.state},</if>-->
+                <!--<if test="createTime != null">CREATE_TIME = #{item.createTime},</if>-->
+                <!--<if test="modifyTime != null">MODIFY_TIME = #{item.modifyTime},</if>-->
+                <!--<if test="smallTypeId != null">SMALL_TYPE_ID = #{item.smallTypeId},</if>-->
+                <!--<if test="type1Name != null">TYPE1_NAME = #{item.type1Name},</if>-->
+                <!--<if test="type2Name != null">TYPE2_NAME = #{item.type2Name},</if>-->
+                <!--<if test="type3Name != null">TYPE3_NAME = #{item.type3Name},</if>-->
+                <!--<if test="name != null">NAME = #{item.name}</if>-->
+            <!--</set>-->
+            <!--WHERE ID = #{item.id}-->
+        <!--</foreach>-->
+    <!--</update>-->
+
+    <!-- 根据主键删除数据 -->
+    <delete id="delete" parameterType="string">
+        DELETE FROM GRADE_CHECK_DETAIL WHERE ID = #{id}
+    </delete>
+
+    <!-- 根据主键批量删除数据 -->
+    <!--<delete id="deleteGradeCheckDetailByIds" parameterType="list">-->
+        <!--DELETE FROM GRADE_CHECK_DETAIL WHERE ID IN-->
+        <!--<foreach collection="list" index="index" item="id" open="(" separator="," close=")">-->
+            <!--#{id}-->
+        <!--</foreach>-->
+    <!--</delete>-->
+
+</mapper>

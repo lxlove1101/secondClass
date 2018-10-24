@@ -50,9 +50,8 @@ public class UserController {
 	@ApiOperation(value = "保存用户")
 	@RequiresPermissions("sys:user:add")
 	public User saveUser(@RequestBody UserDto userDto) {
-		userService.saveUser(userDto);
-
-		return null;
+		User user = userService.saveUser(userDto);
+		return user;
 	}
 
 	@LogAnnotation

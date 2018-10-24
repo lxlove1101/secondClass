@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- t_worktype -->
+<mapper namespace="com.zw.admin.server.dao.WorktypeDao">
+    <!-- 结果映射 -->
+    <resultMap id="worktypeMap" type="Worktype">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="type_code" property="typeCode" jdbcType="VARCHAR"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="is_delete" property="isDelete" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table">
+        t_worktype
+    </sql>
+
+    <!-- 表所有字段 -->
+    <sql id="cols_all">
+        id,
+        <include refid="cols_exclude_id"/>
+    </sql>
+
+    <!-- 表所有字段除id -->
+    <sql id="cols_exclude_id">
+        type_code, type_name, sort, status, is_delete, create_time,
+        update_time
+    </sql>
+
+    <sql id="vals">
+        #{id},#{typeCode},#{typeName},#{sort},#{status},#{isDelete},
+        now(),now()
+    </sql>
+
+    <sql id="updateCondition">
+        <if test="typeCode != null">type_code = #{typeCode},</if>
+        <if test="typeName != null">type_name = #{typeName},</if>
+        <if test="sort != null">sort = #{sort},</if>
+        <if test="status != null">status = #{status},</if>
+        <if test="isDelete != null">is_delete = #{isDelete},</if>
+        <if test="createTime != null">create_time = #{createTime},</if>
+        update_time = now()
+    </sql>
+
+    <sql id="criteria">
+        <if test="id != null">and id = #{id}</if>
+        <if test="typeCode != null">and type_code = #{typeCode}</if>
+        <if test="typeName != null">and type_name = #{typeName}</if>
+        <if test="sort != null">and sort = #{sort}</if>
+        <if test="status != null">and status = #{status}</if>
+        <if test="isDelete != null">and is_delete = #{isDelete}</if>
+        <if test="createTime != null">and create_time = #{createTime}</if>
+        <if test="updateTime != null">and update_time = #{updateTime}</if>
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="getAll" resultMap="worktypeMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM
+        <include refid="table"/>
+    </select>
+
+
+    <!-- 根据条件查询数据 -->
+    <select id="list" parameterType="map" resultMap="worktypeMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            <include refid="criteria"/>
+        </where>
+        ;
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="create" parameterType="Worktype" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="cols_all"/>)
+        values (<include refid="vals"/>)
+    </insert>
+    <!-- 修改数据 -->
+    <update id="update" parameterType="Worktype">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            <include refid="updateCondition"/>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+</mapper>

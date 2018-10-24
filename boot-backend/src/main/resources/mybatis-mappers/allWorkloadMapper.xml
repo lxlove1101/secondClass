@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.zw.admin.server.dao.AllWorkloadDao">
+    <!-- 结果映射 -->
+    <resultMap id="AllWorkloadMap" type="AllWorkload">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="teacher_id" property="teacherId" jdbcType="INTEGER"/>
+        <result column="worktype_code" property="worktypeCode" jdbcType="VARCHAR"/>
+        <result column="all_workload" property="allWorkload" jdbcType="DOUBLE"/>
+        <result column="in_year" property="inYear" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table">
+        t_all_workload
+    </sql>
+    <!-- 表所有字段 -->
+    <sql id="cols_all">
+        id,
+        <include refid="cols_exclude_id"/>
+    </sql>
+
+    <!-- 表所有字段 -->
+    <sql id="cols_exclude_id">
+        teacher_id, worktype_code, all_workload, in_year, create_time, update_time
+    </sql>
+
+    <sql id="vals">
+        #{id},#{teacherId},#{worktypeCode},#{allWorkload},#{inYear},now(),now()
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="getAll" resultMap="AllWorkloadMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM
+        <include refid="table"/>
+    </select>
+
+    <sql id="updateCondition">
+        <if test="teacherId != null">teacher_id = #{teacherId},</if>
+        <if test="worktypeCode != null">worktype_code = #{worktypeCode},</if>
+        <if test="allWorkload != null">all_workload = #{allWorkload},</if>
+        <if test="inYear != null">in_year = #{inYear},</if>
+        <if test="createTime != null">create_time = #{createTime},</if>
+        update_time = now()
+    </sql>
+
+    <sql id="criteria">
+        <if test="id != null">and id = #{id}</if>
+        <if test="teacherId != null">and type_code = #{teacherId}</if>
+        <if test="worktypeCode != null">and worktype_code = #{worktypeCode}</if>
+        <if test="allWorkload != null">and all_workload = #{allWorkload}</if>
+        <if test="inYear != null">and in_year = #{inYear}</if>
+        <if test="createTime != null">and create_time = #{createTime}</if>
+        <if test="updateTime != null">and update_time = #{updateTime}</if>
+    </sql>
+
+    <!-- 根据条件查询数据 -->
+    <select id="list" parameterType="map" resultMap="AllWorkloadMap">
+        SELECT
+        <include refid="cols_all"/>
+        FROM
+        <include refid="table"/>
+        <where>
+            <include refid="criteria"/>
+        </where>
+        ;
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="create" parameterType="AllWorkload" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        <include refid="table"/>
+        (<include refid="cols_all"/>)
+        values (<include refid="vals"/>)
+    </insert>
+
+    <!-- 修改数据 -->
+    <update id="update" parameterType="AllWorkload">
+        UPDATE
+        <include refid="table"/>
+        <set>
+            <include refid="updateCondition"/>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+
+</mapper>

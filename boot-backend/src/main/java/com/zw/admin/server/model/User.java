@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 @Data
 public class User extends BaseEntity<Long> {
@@ -25,8 +26,11 @@ public class User extends BaseEntity<Long> {
 	private Integer status;
 
 	public interface Status {
+		//无效
 		int DISABLED = 0;
+		//有效
 		int VALID = 1;
+		//被锁定
 		int LOCKED = 2;
 	}
 
