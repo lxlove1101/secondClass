@@ -36,6 +36,11 @@ public class UserServiceImpl implements UserService {
 			throw new IllegalArgumentException(userDto.getUsername() + "已存在");
 		}
 		User user = userDto;
+
+
+
+
+
 		user.setSalt(DigestUtils
 				.md5Hex(UUID.randomUUID().toString() + System.currentTimeMillis() + UUID.randomUUID().toString()));
 		user.setPassword(passwordEncoder(user.getPassword(), user.getSalt()));
@@ -89,7 +94,6 @@ public class UserServiceImpl implements UserService {
 		userDao.update(userDto);
 		saveUserRoles(userDto.getId(), userDto.getRoleIds());
 		updateUserSession(userDto.getId());
-
 		return userDto;
 	}
 

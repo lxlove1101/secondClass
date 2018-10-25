@@ -45,10 +45,11 @@ public class UserController {
 	@Autowired
 	private UserDao userDao;
 
+
 	@LogAnnotation
 	@PostMapping
 	@ApiOperation(value = "保存用户")
-	@RequiresPermissions("sys:user:add")
+	@RequiresPermissions("sys:user:add")//检查session当前用户是否有此权限
 	public User saveUser(@RequestBody UserDto userDto) {
 		User user = userService.saveUser(userDto);
 		return user;
